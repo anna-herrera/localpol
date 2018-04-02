@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase": "^4.12.1"
+    "express": "^4.16.3",
+    "firebase": "^4.12.1",
+    "request": "^2.85.0",
+    "server": "^1.0.18"
   }
 }
