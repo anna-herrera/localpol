@@ -2,16 +2,49 @@
   "name": "localpol",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm-run-all --parallel watch:build watch:server",
+    "watch:build": "webpack --watch --display-error-details",
+    "watch:server": "nodemon server.js",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "stop": "taskkill -F -IM node.exe"
   },
   "author": "",
   "license": "ISC",
+  "babel": {
+    "presets": [
+      "env",
+      "react"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  },
   "dependencies": {
+    "cors": "^2.8.4",
     "express": "^4.16.3",
     "firebase": "^4.12.1",
+    "isomorphic-fetch": "^2.2.1",
+    "npm-run-all": "^4.1.2",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
+    "react-router-config": "^1.0.0-beta.4",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "^1.1.2",
     "request": "^2.85.0",
+    "serialize-javascript": "^1.4.0",
     "server": "^1.0.18"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "nodemon": "^1.17.3",
+    "webpack": "^3.11.0",
+    "webpack-node-externals": "^1.6.0"
   }
 }
