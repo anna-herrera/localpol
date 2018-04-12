@@ -1,4 +1,22 @@
 var express = require("express");
+var admin = require('firebase-admin');
+
+// Fetch the service account key JSON file contents
+var config = require(__dirname + "/config.js");
+
+// Initialize the app with a service account, granting admin privileges
+admin.initializeApp({
+  credential: admin.credential.cert(config.keys.firebase_api_key),
+  databaseURL: "https://localpol-c2a9b.firebaseio.com"
+});
+
+// As an admin, the app has access to read and write all data, regardless of Security Rules
+var db = admin.database();
+var ref = db.ref("/Elections");
+ref.once("value", function(snapshot) {
+  console.log(snapshot.val());
+});
+
 // import cors from "cors"
 // import { renderToString } from "react-dom/server"
 // import App from '../shared/App'
@@ -18,7 +36,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 app.get('/', function (req, res) {
-  res.render('index');
+  res.render('index', {electionName: 'Vermont Election'});
 })
 
 app.listen(3000, function () {
