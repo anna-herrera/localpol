@@ -1,18 +1,17 @@
 var config = require('../config');
-var firebase = require('firebase');
+var admin = require('firebase-admin');
+// Fetch the service account key JSON file contents
+var config = require("../config.js");
 
-var config_fb = {
-    apiKey: config.keys.firebase_api_key,
-    authDomain: "localpol-c2a9b.firebaseapp.com",
-    databaseURL: "https://localpol-c2a9b.firebaseio.com",
-    projectId: "localpol-c2a9b",
-    storageBucket: "localpol-c2a9b.appspot.com",
-    messagingSenderId: "393583030469"
-};
+// Initialize the app with a service account, granting admin privileges
+admin.initializeApp({
+  credential: admin.credential.cert(config.keys.firebase_api_key),
+  databaseURL: "https://localpol-c2a9b.firebaseio.com"
+});
 
-firebase.initializeApp(config_fb);
+var db = admin.database();
+var ref = db.ref("/Elections");
 
-var database = firebase.database();
 
 function writeElection(title, state, type, level, date, otherDates) {
     var electionData = {
@@ -24,18 +23,23 @@ function writeElection(title, state, type, level, date, otherDates) {
         otherDates: otherDates
     };
 
-    var newElectionKey = firebase.database().ref().child('elections').push().key;
+    var newElectionKey = ref.push().key;
 
     var updates = {};
 
-    updates['/elections/' + newElectionKey] = electionData;
+    updates['/Elections/' + newElectionKey] = electionData;
     
-    return firebase.database().ref().update(updates);
+    return db.ref().update(updates);
 };
 
 function readElections() {
-    return firebase.database().ref('/elections');
+    ref.once("value").then(function(snapshot) {
+        //console.log(snapshot.val());
+        return(snapshot.val());
+    });
 };
+
+
 
 module.exports.writeElection = writeElection;
 module.exports.readElections = readElections;
