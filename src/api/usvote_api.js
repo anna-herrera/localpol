@@ -1,7 +1,7 @@
 //var express = require('express')
 var config = require("../config.js");
 //var request = require("request");
-import fetch from 'isomorphic-fetch'
+var fetch = require('isomorphic-fetch');
 
 /*export function fetchPopularRepos (language = 'all') {
   const encodedURI = encodeURI(`https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=stars&order=desc&type=Repositories`)
@@ -30,7 +30,7 @@ function append_url(first, url, appended) {
   } else {
     return url + '&' + appended;
   }
-}
+};
 
 function callback(error, response, body) {
   if (!error && response.statusCode == 200) {
@@ -40,9 +40,9 @@ function callback(error, response, body) {
   } else {
     console.log(error);
   }
-}
+};
 
-export function get_elections(election_level_id, limit, offset) {
+function get_elections(election_level_id, limit, offset) {
   var url = 'https://localelections.usvotefoundation.org/api/v1/elections';
 
   var first = true;
@@ -75,18 +75,19 @@ export function get_elections(election_level_id, limit, offset) {
   return fetch(url, options)
     .then(function(response) {
       return response.json();
+    });
+    /*.then(function(myJson) {
+      console.log(myJson);
     })
-    //.then(function(myJson) {
-      //console.log(myJson);
-    // })
-    // .catch((error) => {
-    //   console.warn(error)
-    //   console.log(body);
-    //   return null
-    // });
+    .catch((error) => {
+      console.warn(error)
+      console.log(body);
+      return null
+    });*/
 
 }
 
+module.exports.get_elections = get_elections;
 
 
 

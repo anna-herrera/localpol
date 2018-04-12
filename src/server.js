@@ -8,6 +8,7 @@ var express = require("express");
 // import { matchPath } from "react-router-dom"
 // import routes from '../shared/routes'
 // import { StaticRouter, matchPath } from "react-router-dom"
+var controller = require("./controller/index");
 
 const app = express()
 
@@ -34,6 +35,8 @@ function ignoreFavicon(req, res, next) {
     next();
   }
 }
+
+controller.display_elections();
 /*
 
 app.get("*", (req, res, next) => {
