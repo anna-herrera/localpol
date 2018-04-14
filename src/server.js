@@ -11,20 +11,28 @@ app.get('/', function (req, res) {
   res.render('pages/index', {electionName: 'Vermont Election'});
 })
 
+
+/*This currently renders a page listing all the elections. 
+We can modify it to be /elections/:state and use the state 
+parameter to get elections from a particular state. See elections.ejs
+under views/pages to see how I linked the specific election route
+to each list item.*/
+
 app.get('/elections', function (req, res) {
   var elections = fb.readElectionsPromise();
   elections.then(function(data) {
-    //console.log(data);
     res.render('pages/elections', {data: data});
   })
 })
 
-app.get('/election/:id', function (req, res) {
-  //console.log("rendering one election")
+/*When an election is selected from the elections page, 
+it links to the specific election page. This page currently 
+displays the title of a specific election. I do a query based
+on the election id which is passed in through the path.*/
 
+app.get('/election/:id', function (req, res) {
   var elections = fb.querySpecificElection(req.params['id']);
   elections.then(function(data) {
-    //console.log(data);
     res.render('pages/election', {data: data});
   })
 })
@@ -44,4 +52,3 @@ function ignoreFavicon(req, res, next) {
   }
 }
 
-controller.display_elections();
