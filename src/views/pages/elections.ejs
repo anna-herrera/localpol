@@ -12,9 +12,11 @@
 </header>
 
 <main>
-    <div class="jumbotron">
-        <h1>This is great</h1>
-        <p>Welcome to templating using EJS</p>
+    <div class="list-group">
+        <% for(var i in data) { %>
+            <% console.log(i); %>
+            <a href="/election/<%= i%>" class="list-group-item"><%= data[i].title %></a>
+        <% } %>
     </div>
 </main>
 

@@ -1,8 +1,6 @@
 var fb = require('../db/firebase');
 var usvote = require('../api/usvote_api');
 
-
-
 function display_elections() {
     /*var elections_promise = usvote.get_elections(7, null, null);
     elections_promise.then(function(data) {
@@ -19,12 +17,24 @@ function display_elections() {
 
     });*/
 
-    var elections = fb.readElections();
+    /* working read elections (won't be able to update automatically) */
+    var elections = fb.readElectionsPromise();
     elections.then(function(data) {
         console.log(data);
-    });
+    })
+    /* end working read elections */
 
-    //console.log(fb.readElections());
+    /* try querying by state (California) */
+    // fb.queryState();
+    /* end querying */
+
+    /* setting and constant reading of elections */
+    // fb.setElections();
+    // fb.readElections().then(function(data) {
+    //     console.log(data);
+    // })
+
+    // fb.constantReadElections();
+    /* end setting/constant reading */
 }
-
 module.exports.display_elections = display_elections;
