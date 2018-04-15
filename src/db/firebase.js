@@ -85,6 +85,23 @@ function queryState() {
         //console.log(snapshot.val());
 }
 
+/* 
+    return a promise listing the elections in a given state 
+    takes in state, a string parameter
+*/
+function queryByState(state) {
+    return new Promise(function(resolve, reject) {
+        var electionsRef = db.ref("Elections");
+        ref.orderByChild("state").equalTo(state).on("child_added", function(snapshot) {
+            if (snapshot === undefined) {
+                reject();
+            } else {
+                resolve(snapshot.val());
+            }
+        });
+    });
+}
+
 function querySpecificElection(key) {
     return new Promise(function(resolve, reject) {
         var election = db.ref("/Elections").child(key);
@@ -109,3 +126,4 @@ module.exports.readElectionsPromise = readElectionsPromise;
 module.exports.constantReadElections = constantReadElections;
 module.exports.queryState = queryState;
 module.exports.querySpecificElection = querySpecificElection;
+module.exports.queryByState = queryByState;

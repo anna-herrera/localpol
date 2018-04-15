@@ -1,11 +1,13 @@
 var express = require("express");
 var controller = require("./controller/index");
 var fb = require("./db/firebase");
+var candidates = require("./candidates/candidates.js");
 
 const app = express()
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+app.use('/candidates', candidates); // this adds the /candidates route to the app
 
 app.get('/', function (req, res) {
   res.render('pages/index', {electionName: 'Vermont Election'});
@@ -25,6 +27,9 @@ app.get('/elections', function (req, res) {
   })
 })
 
+app.get('/elections?state=:state'), function (req, res) {
+  var elections = fb.queryByState(req.params['state']);
+}
 /*When an election is selected from the elections page, 
 it links to the specific election page. This page currently 
 displays the title of a specific election. I do a query based
