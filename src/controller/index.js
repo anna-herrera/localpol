@@ -1,12 +1,12 @@
 var fb = require('../db/firebase');
 var usvote = require('../api/usvote_api');
 
-function display_elections() {
-    /*var elections_promise = usvote.get_elections(7, null, null);
+function update_elections(level_id) {
+    var elections_promise = usvote.get_elections(level_id, null, null);
     elections_promise.then(function(data) {
         
         // return a promise
-        return usvote.get_elections(7, data.meta.total_objects, null);
+        return usvote.get_elections(level_id, data.meta.total_objects, null);
     }).then(function(data2) {
         // data2 is result from apicall
         console.log(data2);
@@ -15,13 +15,9 @@ function display_elections() {
                 election.election_level.name, election.election_date, election.dates);
         });
 
-    });*/
+    });
 
     /* working read elections (won't be able to update automatically) */
-    var elections = fb.readElectionsPromise();
-    elections.then(function(data) {
-        console.log(data);
-    })
     /* end working read elections */
 
     /* try querying by state (California) */
@@ -37,4 +33,29 @@ function display_elections() {
     // fb.constantReadElections();
     /* end setting/constant reading */
 }
+
+function display_elections() {
+    var elections = fb.readElectionsPromise();
+    elections.then(function(data) {
+        console.log(data);
+    })
+}
+
+function update_states(level_id) {
+    fb.setStates();
+    var states_promise = usvote.get_states();
+    states_promise.then(function(data) {
+        
+        // return a promise
+        console.log(data);
+        data.objects.forEach(function(state) {
+            fb.writeState(state.name);
+        });
+
+    });
+
+}
+
 module.exports.display_elections = display_elections;
+module.exports.update_elections = update_elections;
+module.exports.update_states = update_states;

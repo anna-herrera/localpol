@@ -33,6 +33,17 @@ function writeElection(title, state, type, level, date, otherDates) {
     return db.ref().update(updates);
 };
 
+
+function writeState(state) {
+    var newStateKey = db.ref("/States").push().key;
+
+    var updates = {};
+
+    updates['/States/' + newStateKey] = { name: state};
+    
+    return db.ref().update(updates);
+};
+
 /* testing set elections DON'T USE ON REF!!! */
 function setElections() {
     var dummyData = {
@@ -43,6 +54,10 @@ function setElections() {
         type : "Party Precinct Caucus"
     }
     testElectionsRef.set(dummyData);
+}
+
+function setStates() {
+    db.ref("/States").set(null);
 }
 
 /* returns a promise to read new elections */
@@ -59,6 +74,19 @@ function readElectionsPromise() {
     });
 };
 
+
+function readStatesPromise() {
+    return new Promise(function(resolve, reject) {
+        db.ref("/States").once("value", function(snapshot) {
+            if (snapshot === undefined) {
+                reject();
+            } else {
+                resolve(snapshot.val());
+            }
+        })
+        //console.log(snapshot.val());
+    });
+};
 
 /* read elections once and print */
 function readElections() {
@@ -91,7 +119,7 @@ function queryState() {
 */
 function queryByState(state) {
     return new Promise(function(resolve, reject) {
-        var electionsRef = db.ref("Elections");
+        var electionsRef = db.ref("/Elections");
         ref.orderByChild("state").equalTo(state).on("child_added", function(snapshot) {
             if (snapshot === undefined) {
                 reject();
@@ -127,3 +155,6 @@ module.exports.constantReadElections = constantReadElections;
 module.exports.queryState = queryState;
 module.exports.querySpecificElection = querySpecificElection;
 module.exports.queryByState = queryByState;
+module.exports.writeState = writeState;
+module.exports.readStatesPromise = readStatesPromise;
+module.exports.setStates = setStates;

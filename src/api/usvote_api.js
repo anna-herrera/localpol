@@ -69,24 +69,30 @@ function get_elections(election_level_id, limit, offset) {
     }
   };
 
-  console.log(config.keys.usvote_api_token)
-  console.log(url)
+  //console.log(config.keys.usvote_api_token)
+  //console.log(url)
 
   return fetch(url, options)
     .then(function(response) {
       return response.json();
     });
-    /*.then(function(myJson) {
-      console.log(myJson);
-    })
-    .catch((error) => {
-      console.warn(error)
-      console.log(body);
-      return null
-    });*/
-
 }
 
+
+function get_states(){
+  var url = 'https://localelections.usvotefoundation.org/api/v1/states?limit=56';
+  var options = {
+    headers: {
+      'Authorization': 'Token ' + config.keys.usvote_api_token
+    }
+  };
+  return fetch(url, options)
+    .then(function(response) {
+      return response.json();
+    });
+}
+
+module.exports.get_states = get_states;
 module.exports.get_elections = get_elections;
 
 

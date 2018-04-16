@@ -12,9 +12,23 @@
 </header>
 
 <main>
-    <div class="jumbotron">
-        <h1>This is great</h1>
-        <p>Welcome to templating using EJS</p>
+    <div class="container">
+        <div class="row">
+            <h2>Find Upcoming Elections</h2>
+            <p>Select your state to begin.</p>
+        </div>
+        <form action="getState" method="get">
+            <div class="row">
+                <select name="stateSelector" class="selectpicker" data-show-subtext="true" data-live-search="true">
+                    <% for(var i in data) { %>
+                        <option value=<%= data[i].name %>><%= data[i].name %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn btn-secondary btn-lg">Find Elections</button>
+            </div>
+        </form>
     </div>
 </main>
 

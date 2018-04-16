@@ -10,9 +10,22 @@ app.set('view engine', 'ejs');
 app.use('/candidates', candidates); // this adds the /candidates route to the app
 
 app.get('/', function (req, res) {
-  res.render('pages/index', {electionName: 'Vermont Election'});
+  var states = fb.readStatesPromise();
+  states.then(function(data) {
+    res.render('pages/index', {data: data});
+  })
 })
 
+app.get('/getState', function (req, res) {
+  var state = req.query['stateSelector'];
+  console.log(state);
+  var elections = fb.queryByState(state);
+  elections.then(function(data) {
+    //res.status(HttpStatus.OK);
+    console.log(data);
+    res.render('pages/elections', {data: data});
+  })
+})
 
 /*This currently renders a page listing all the elections. 
 We can modify it to be /elections/:state and use the state 
@@ -57,3 +70,4 @@ function ignoreFavicon(req, res, next) {
   }
 }
 
+controller.update_states();
