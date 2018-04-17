@@ -46,14 +46,7 @@ function writeState(state) {
 
 /* testing set elections DON'T USE ON REF!!! */
 function setElections() {
-    var dummyData = {
-        election_date : "2018-09-30",
-        level : "City",
-        state : "Vermont",
-        title : "Montpelier Election",
-        type : "Party Precinct Caucus"
-    }
-    testElectionsRef.set(dummyData);
+    db.ref("/Elections").set(null);
 }
 
 function setStates() {
@@ -120,7 +113,20 @@ function queryState() {
 function queryByState(state) {
     return new Promise(function(resolve, reject) {
         var electionsRef = db.ref("/Elections");
-        ref.orderByChild("state").equalTo(state).on("child_added", function(snapshot) {
+        electionsRef.orderByChild("state").equalTo(state).on("value", function(snapshot) {
+            if (snapshot === undefined) {
+                reject();
+            } else {
+                resolve(snapshot.val());
+            }
+        });
+    });
+}
+
+function queryByTitle(title) {
+    return new Promise(function(resolve, reject) {
+        var electionsRef = db.ref("/Elections");
+        electionsRef.orderByChild("title").equalTo(title).on("value", function(snapshot) {
             if (snapshot === undefined) {
                 reject();
             } else {
@@ -155,6 +161,7 @@ module.exports.constantReadElections = constantReadElections;
 module.exports.queryState = queryState;
 module.exports.querySpecificElection = querySpecificElection;
 module.exports.queryByState = queryByState;
+module.exports.queryByTitle = queryByTitle;
 module.exports.writeState = writeState;
 module.exports.readStatesPromise = readStatesPromise;
 module.exports.setStates = setStates;

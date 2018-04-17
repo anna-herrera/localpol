@@ -22,8 +22,17 @@ app.get('/getState', function (req, res) {
   var elections = fb.queryByState(state);
   elections.then(function(data) {
     //res.status(HttpStatus.OK);
-    console.log(data);
-    res.render('pages/elections', {data: data});
+    var ordered = Object.values(data);
+    var byTitle = ordered.slice(0);
+    byTitle.sort(function(a,b) {
+        var x = a.title.toLowerCase();
+        var y = b.title.toLowerCase();
+        return x < y ? -1 : x > y ? 1 : 0;
+    });
+
+    //console.log('by title:');
+    //console.log(byTitle);
+    res.render('pages/elections', {data: byTitle});
   })
 })
 
@@ -49,9 +58,11 @@ displays the title of a specific election. I do a query based
 on the election id which is passed in through the path.*/
 
 app.get('/election/:id', function (req, res) {
-  var elections = fb.querySpecificElection(req.params['id']);
+  console.log(req.params['id']);
+  var elections = fb.queryByTitle(req.params['id']);
   elections.then(function(data) {
-    res.render('pages/election', {data: data});
+    //console.log(data);
+    res.render('pages/election', {data: Object.values(data)[0]});
   })
 })
 
@@ -71,3 +82,4 @@ function ignoreFavicon(req, res, next) {
 }
 
 controller.update_states();
+controller.update_elections();

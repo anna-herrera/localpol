@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "npm-run-all --parallel watch:build watch:server",
+    "start": "nodemon src/server.js",
     "watch:build": "webpack --watch --display-error-details",
     "watch:server": "nodemon server.js",
     "build": "react-scripts build",

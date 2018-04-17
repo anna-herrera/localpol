@@ -13,9 +13,13 @@
 
 <main>
     <div class="list-group">
-        <% for(var i in data) { %>
-            <% console.log(i); %>
-            <a href="/election/<%= i%>" class="list-group-item"><%= data[i].title %></a>
+        <% if (data == null) { %>
+            <h4>There is no election data for this state at this time.</h4>
+        <% } else { %>
+            <% for(var i in data) { %>
+                <% console.log(i); %>
+                <a href="/election/<%= data[i].title%>" class="list-group-item"><%= data[i].title %></a>
+            <% } %>
         <% } %>
     </div>
 </main>
