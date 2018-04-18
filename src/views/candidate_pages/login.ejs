@@ -3,28 +3,29 @@
   <head>
     <meta charset="UTF-8">
     <title>Sample FirebaseUI App</title>
-    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
-    <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyA4B5iDlyyF-NEn0P7lLa5Ik6dE_R-QJfY",
-        authDomain: "localpol-c2a9b.firebaseapp.com",
-        databaseURL: "https://localpol-c2a9b.firebaseio.com",
-        projectId: "localpol-c2a9b",
-        storageBucket: "localpol-c2a9b.appspot.com",
-        messagingSenderId: "393583030469"
-      };
-      firebase.initializeApp(config);
-    </script>
+    <% include ../partials/firebase_auth %>
     <script src="https://cdn.firebase.com/libs/firebaseui/2.7.0/firebaseui.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.7.0/firebaseui.css" />
     <script type="text/javascript">
       // FirebaseUI config.
       var uiConfig = {
-        signInSuccessUrl: '/candidates/success',
+        callbacks: {
+          signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+            var user = authResult.user;
+            var credential = authResult.credential;
+            var isNewUser = authResult.additionalUserInfo.isNewUser;
+            var providerId = authResult.additionalUserInfo.providerId;
+            var operationType = authResult.operationType;
+            // Do something with the returned AuthResult.
+            // Return type determines whether we continue the redirect automatically
+            // or whether we leave that to developer to handle.
+            redirectUrl += '/' + user.id;
+            return true;
+          }
+        },
         signInOptions: [
           // Leave the lines as is for the providers you want to offer your users.
-          // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
           // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
           // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
           // firebase.auth.GithubAuthProvider.PROVIDER_ID,
@@ -32,16 +33,23 @@
           // firebase.auth.PhoneAuthProvider.PROVIDER_ID
         ],
         // Terms of service url.
-        tosUrl: '<your-tos-url>'
+        // tosUrl: '<your-tos-url>'
+        credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO // change from accountchooser.com
       };
 
-      // Initialize the FirebaseUI Widget using Firebase.
+
+      // // Initialize the FirebaseUI Widget using Firebase.
       var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
       // The start method will wait until the DOM is loaded.
       ui.start('#firebaseui-auth-container', uiConfig);
     </script>
+    <% include ../partials/head %>
   </head>
   <body>
+    <header><% include ../partials/header %></header>
+    <h2 class="text-center">Please select a form of login</h2>
     <div id="firebaseui-auth-container"></div>
+    <footer><% include ../partials/footer %></footer>
   </body>
 </html>

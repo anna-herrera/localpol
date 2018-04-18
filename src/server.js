@@ -81,5 +81,5 @@ function ignoreFavicon(req, res, next) {
   }
 }
 
-controller.update_states();
-controller.update_elections();
+// controller.update_states();
+// controller.update_elections();
