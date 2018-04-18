@@ -2,12 +2,63 @@ var express = require("express");
 var controller = require("./controller/index");
 var fb = require("./db/firebase");
 var candidates = require("./candidates/candidates.js");
+var gcal = require('./api/google_calendar_api.js');
+var passport = require('passport')
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var config = require('./config.js');
+//const TOKEN_PATH = 'credentials.json';
+const fs = require('fs');
 
+var token;
 const app = express()
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+app.use(express.static('views'));
 app.use('/candidates', candidates); // this adds the /candidates route to the app
+//app.use(express.bodyParser());
+//app.use(express.session({ secret: 'keyboard cat' }));
+
+app.use(passport.initialize());
+
+/* Authentication */
+
+console.log(config.keys.google_client_secret.web.client_secret);
+passport.use(new GoogleStrategy({
+    clientID: config.keys.google_client_id,
+    clientSecret: config.keys.google_client_secret.web.client_secret,
+    callbackURL: "http://localhost:3000/auth/google/callback",
+    scope: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/plus.login']
+  },
+  function(accessToken, refreshToken, profile, done) {
+    token = accessToken;
+    return done(null, profile);
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+
+/*todo probably need session to true*/
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/calendar'] }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) { 
+    req.session.access_token = req.user.accessToken;
+    res.redirect('/');
+  });
+  
+
+
+/* Displaying */ 
 
 app.get('/', function (req, res) {
   var states = fb.readStatesPromise();
@@ -81,5 +132,43 @@ function ignoreFavicon(req, res, next) {
   }
 }
 
-// controller.update_states();
-// controller.update_elections();
+app.get('/election/:id/:date', function(req, res){
+  
+  console.log(token);
+  if(!token) return res.redirect('/auth/google');
+  
+  //var accessToken     = req.session.access_token;
+  //var calendarId      = req.params.calendarId;
+  var elections = fb.queryByTitle(req.params['id']);
+  elections.then(function(data) {
+    var data2 = Object.values(data)[0];
+    if (req.params['date'] == 'actual') {
+      var date = data2.date;
+    } else {
+      var date = data2.otherDates[parseInt(req.params['date'], 10)].date;
+    }
+
+    var event = {
+      'summary': data2.title,
+      'start': {
+        'date' : date,
+      },
+      'end': {
+        'date' : date,
+      }
+    };
+    gcal(token).events.insert("primary", event, function(err, data) {
+      if(err) return res.send(500,err);
+      return res.redirect('/election/' + req.params['id']);
+    });
+
+
+  })
+  
+  
+});
+
+
+//controller.update_states();
+//controller.update_elections();
+
