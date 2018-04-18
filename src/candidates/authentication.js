@@ -12,25 +12,25 @@ var config = {
 };
 firebase.initializeApp(config);
 
-/* function to register if can't use firebaseui */
-function register(email, password, name) {
-	firebase.auth().createUserWithEmailAndPassword('test@email.com', '').catch(function(error) {
-		console.log(error.message);
-	});
-}
+// /* function to register if can't use firebaseui */
+// function register(email, password, name) {
+// 	firebase.auth().createUserWithEmailAndPassword('test@email.com', '').catch(function(error) {
+// 		console.log(error.message);
+// 	});
+// }
 
-/* function to sign in if can't use firebaseui */
-function signIn(email, password) {
-	firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-	  // Handle Errors here.
-	  var errorCode = error.code;
-	  var errorMessage = error.message;
-	  console.log(errorMessage);
-	});
-}
+//  function to sign in if can't use firebaseui 
+// function signIn(email, password) {
+// 	firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+// 	  // Handle Errors here.
+// 	  var errorCode = error.code;
+// 	  var errorMessage = error.message;
+// 	  console.log(errorMessage);
+// 	});
+// }
 
 
 
 module.exports.firebase = firebase;
-module.exports.register = register;
-module.exports.signIn = signIn;
+// module.exports.register = register;
+// module.exports.signIn = signIn;

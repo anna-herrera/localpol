@@ -165,12 +165,7 @@ app.get('/election/:id/:date', function(req, res){
   })
 });
 
-<<<<<<< HEAD
 
-//controller.update_states();
-//controller.update_elections();
-
-=======
 app.get('/candidate/:id', function (req, res) {
   console.log(req.params['id']);
   var candidates = fb.querySpecificCandidate(req.params['id']);
@@ -184,4 +179,4 @@ app.get('/candidate/:id', function (req, res) {
 //controller.update_states();
 //controller.update_elections();
 //controller.add_candidates();
->>>>>>> 1c5158aa9e81c6dda3c7cbb33cd3bf7e31353aa2
+

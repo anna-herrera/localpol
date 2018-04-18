@@ -192,6 +192,39 @@ function querySpecificCandidate(key) {
     });
 }
 
+function queryUserProfile(key) { 
+    return new Promise(function(resolve, reject) {
+        var candidate = db.ref("/UserToCandidates").child(key);
+        //console.log(candidate);
+        candidate.on("value", function(snapshot) {
+            //console.log(snapshot.val());
+            if (snapshot === undefined) {
+                reject();
+            } else {
+                resolve(snapshot.val());
+            }
+        })
+        //console.log(snapshot.val());
+    });
+}
+
+function testUpdate() {
+    var candidate = db.ref("/Candidates").child("-LAMYRMaMFM5llPep5gv");
+    candidate.update({bio: "new bio"});
+}
+
+/* take in the id of candidate to be updated and an object of the new data values */
+function updateCandidate(candidateId, newData) {
+    return new Promise(function(resolve, reject) {
+        var candidate = db.ref("/Candidates").child(candidateId);
+
+        console.log("obj to update: " + candidate)
+        //console.log(candidate);
+        candidate.update(newData);
+        //console.log(snapshot.val());
+    });    
+}
+
 
 
 module.exports.admin = admin;
@@ -210,3 +243,6 @@ module.exports.setStates = setStates;
 module.exports.writeCandidate = writeCandidate;
 module.exports.setCandidates = setCandidates;
 module.exports.querySpecificCandidate = querySpecificCandidate;
+module.exports.queryUserProfile = queryUserProfile;
+module.exports.updateCandidate = updateCandidate;
+module.exports.testUpdate = testUpdate;

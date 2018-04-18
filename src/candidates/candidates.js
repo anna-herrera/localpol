@@ -28,9 +28,12 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 // router.get('/login', function(req, res) {
 //     res.render('candidate_pages/login', {ui: ui, uiConfig: uiConfig});
 // });
+// 
 
 router.get('/', function(req, res) {
-    res.redirect('/candidates/login');
+    // try and get to daniel's edit page
+    res.redirect('/candidates/candidate/BDrnqtlte4dIm7dBJWVLBRxte1n2/edit');
+    // res.redirect('/candidates/login');
 });
 
 // router.post('/login', function(req, res) {
@@ -42,6 +45,69 @@ router.get('/', function(req, res) {
 router.get('/register', function(req, res) {
   res.render('candidate_pages/register');
 })
+
+router.get('/candidate/:id/edit', function(req, res) {
+  // have to make sure that the id is in the users database
+  var userId = req.params['id'];
+  console.log('user id is: ' + userId);
+
+  // TODO check that user exists
+  admin.auth().getUser(userId)
+  .then(function(userRecord) {
+    isUser = true;
+    // See the UserRecord reference doc for the contents of userRecord.
+    console.log("Successfully fetched user data:", userRecord.toJSON());
+  })
+  .catch(function(error) {
+    console.log("Error fetching user data:", error);
+  });
+
+      // have to map from user to profile
+      var candidateId = adminFb.queryUserProfile(req.params['id']);
+      candidateId.then(function(data) {
+        console.log('candidate id = '+ data);
+        return data; // return promise with candidate id
+      }).then(function(data) {
+          if (data) {
+            var candidateId = data;
+            var candidates = adminFb.querySpecificCandidate(candidateId);
+            candidates.then(function(data) {
+              res.render('candidate_pages/editCandidate', {userId: userId, candidateId: candidateId, data: data});
+            }).catch(function(error) {
+              console.log(error);
+              res.send(error);
+            });
+          } else {
+            res.send('could not find user');
+          }
+        // res.render('candidate_pages/editCandidate', {data: data});
+      }).catch(function(error) {
+        console.log(error);
+        res.send(error);
+      });
+  // candidates.then(function(data) {
+  //   res.render('candidate_pages/editCandidate', {data: data});
+  // })
+});
+
+router.post('/candidate/:id/edit', function(req, res) {
+  var userId =req.params.id;
+  var newData = req.body;
+  var candidateId = adminFb.queryUserProfile(userId);
+  candidateId.then(function(data) {
+    adminFb.updateCandidate(data, newData);
+  })
+  // adminFb.testUpdate();
+  // res.redirect('/candidates/candidate/' + req.params.id + '/edit');
+  res.redirect('/candidates/candidate/' + userId + '/edit');
+  // candidates.then(function(data) {
+  //   res.render('candidate_pages/editCandidate', {data: data});
+  // })
+});
+
+router.post('/candidate/:id/addElection', function(req, res) {
+
+});
 
 /*
 router.post('/register', function(req, res) {
@@ -129,7 +195,13 @@ router.get('/candidate', function(req, res) {
 });
 
 router.get('/candidate/:id', function(req, res) {
-  res.render('candidate_pages/candidateHome');
+  console.log(req.params['id']);
+  var candidates = adminFb.querySpecificCandidate(req.params['id']);
+  candidates.then(function(data) {
+    console.log(data);
+    res.render('candidate_pages/candidateHome', {data : data});
+  })
+  
 });
 
 router.post('/candidate/:id/verify', function(req, res) {
