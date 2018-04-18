@@ -3,26 +3,27 @@
   <head>
     <meta charset="UTF-8">
     <title>Sample FirebaseUI App</title>
-    <% include ../partials/firebase_auth %>
+    <% include ../partials/firebase_auth %><!-- TODO: change this into a script -->
     <script src="https://cdn.firebase.com/libs/firebaseui/2.7.0/firebaseui.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.7.0/firebaseui.css" />
     <script type="text/javascript">
       // FirebaseUI config.
       var uiConfig = {
-        callbacks: {
-          signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-            var user = authResult.user;
-            var credential = authResult.credential;
-            var isNewUser = authResult.additionalUserInfo.isNewUser;
-            var providerId = authResult.additionalUserInfo.providerId;
-            var operationType = authResult.operationType;
-            // Do something with the returned AuthResult.
-            // Return type determines whether we continue the redirect automatically
-            // or whether we leave that to developer to handle.
-            redirectUrl += '/' + user.id;
-            return true;
-          }
-        },
+        signInSuccessUrl: '/candidates/candidate',
+        // callbacks: {
+        //   signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+        //     var user = authResult.user;
+        //     var credential = authResult.credential;
+        //     var isNewUser = authResult.additionalUserInfo.isNewUser;
+        //     var providerId = authResult.additionalUserInfo.providerId;
+        //     var operationType = authResult.operationType;
+        //     // Do something with the returned AuthResult.
+        //     // Return type determines whether we continue the redirect automatically
+        //     // or whether we leave that to developer to handle.
+        //     redirectUrl = "/success";
+        //     return true;
+        //   }
+        // },
         signInOptions: [
           // Leave the lines as is for the providers you want to offer your users.
           firebase.auth.GoogleAuthProvider.PROVIDER_ID,

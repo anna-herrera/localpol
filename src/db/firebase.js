@@ -152,7 +152,7 @@ function querySpecificElection(key) {
 
 
 
-
+module.exports.admin = admin;
 module.exports.writeElection = writeElection;
 module.exports.readElections = readElections;
 module.exports.setElections = setElections;
