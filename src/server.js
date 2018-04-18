@@ -7,6 +7,8 @@ var passport = require('passport')
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var config = require('./config.js');
 var session = require('express-session');
+var bodyParser = require('body-parser')
+
 //const TOKEN_PATH = 'credentials.json';
 const fs = require('fs');
 
@@ -15,8 +17,9 @@ const app = express()
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-app.use('/candidates', candidates); // this adds the /candidates route to the app
+//app.use('/candidates', candidates); // this adds the /candidates route to the app
 //app.use(express.bodyParser());
+app.use( bodyParser.urlencoded({ extended: false }) ); 
 app.use(session({ secret: 'keyboard cat' }));
 app.use(passport.initialize());
 app.use( express.static( __dirname + "/public" ) );
@@ -70,15 +73,19 @@ app.get('/getState', function (req, res) {
   console.log(state);
   var elections = fb.queryByState(state);
   elections.then(function(data) {
+    //console.log(data);
     //res.status(HttpStatus.OK);
-    var ordered = Object.values(data);
-    var byTitle = ordered.slice(0);
-    byTitle.sort(function(a,b) {
-        var x = a.title.toLowerCase();
-        var y = b.title.toLowerCase();
-        return x < y ? -1 : x > y ? 1 : 0;
-    });
-
+    if (data == null) {
+      var byTitle = null;
+    } else {
+      var ordered = Object.values(data);
+      var byTitle = ordered.slice(0);
+      byTitle.sort(function(a,b) {
+          var x = a.title.toLowerCase();
+          var y = b.title.toLowerCase();
+          return x < y ? -1 : x > y ? 1 : 0;
+      });
+    }
     //console.log('by title:');
     //console.log(byTitle);
     res.render('pages/elections', {data: byTitle});
@@ -169,8 +176,17 @@ app.get('/candidate/:id', function (req, res) {
     console.log(data);
     res.render('pages/profile', {data: data});
   })
-})
+});
 
+
+app.get('/candidates', function(req, res) {
+  res.render('pages/candidates');
+});
+
+app.post('/getCandidate', function(req, res) {
+  
+  fb.createUser(req.body.usr, req.body.pwd);
+});
 
 //controller.update_states();
 //controller.update_elections();
