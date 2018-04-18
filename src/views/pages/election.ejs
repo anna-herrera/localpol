@@ -22,12 +22,22 @@
         <div class="row">
             <div class="col-md-6">
                 <h2>Election Dates</h2>
-                <p>Select Date to Add to Google Calendar</p>
+                <p>Add date to your Google Calendar</p>
                 <div class="list-group">
                     <a href="/election/<%= data.title%>/actual" class="list-group-item"><i class="fa fa-calendar"></i><%= " Election Date " + data.date %></a>
                     <% for(var i in data.otherDates) { %>
                         <% console.log(i); %>
                         <a href="/election/<%= data.title%>/<%= i%>" class="list-group-item"><i class="fa fa-calendar"></i><%= " " + data.otherDates[i].kind + " " + data.otherDates[i].date_human_readable %></a>
+                    <% } %>
+                    </div>
+            </div>
+            <div class="col-md-6">
+                <h2>Candidates</h2>
+                <p>Select a candidate to view their platform</p>
+                <div class="list-group">
+                    <% for(var i in data.candidates) { %>
+                        <% console.log(i); %>
+                        <a href="/candidate/<%= i%>" class="list-group-item"><%= data.candidates[i] %></a>
                     <% } %>
                     </div>
             </div>
