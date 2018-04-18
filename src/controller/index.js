@@ -42,6 +42,13 @@ function update_states(level_id) {
     });
 }
 
+function add_candidates() {
+    fb.setCandidates();
+    fb.writeCandidate(['-LAMVz0Bc12PzUBZMvYM', '-LAMVz0Bc12PzUBZMvYN'], 'Anna', "Anna's bio", "Anna's platform")
+    fb.writeCandidate(['-LAMVz0Bc12PzUBZMvYM', '-LAMVz0Bc12PzUBZMvYN'], 'Daniel', "Daniel's bio", "Daniel's platform")
+}
+
 module.exports.display_elections = display_elections;
 module.exports.update_elections = update_elections;
 module.exports.update_states = update_states;
+module.exports.add_candidates = add_candidates;

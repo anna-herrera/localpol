@@ -6,6 +6,7 @@ var gcal = require('./api/google_calendar_api.js');
 var passport = require('passport')
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var config = require('./config.js');
+var session = require('express-session');
 //const TOKEN_PATH = 'credentials.json';
 const fs = require('fs');
 
@@ -17,9 +18,10 @@ app.set('view engine', 'ejs');
 app.use(express.static('views'));
 app.use('/candidates', candidates); // this adds the /candidates route to the app
 //app.use(express.bodyParser());
-//app.use(express.session({ secret: 'keyboard cat' }));
 
+app.use(session({ secret: 'keyboard cat' }));
 app.use(passport.initialize());
+app.use( express.static( __dirname + "/public" ) );
 
 /* Authentication */
 
@@ -53,7 +55,7 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) { 
     req.session.access_token = req.user.accessToken;
-    res.redirect('/');
+    res.redirect(req.session.search);
   });
   
 
@@ -135,10 +137,9 @@ function ignoreFavicon(req, res, next) {
 app.get('/election/:id/:date', function(req, res){
   
   console.log(token);
+  req.session.search = '/election/' + req.params['id'] + '/' + req.params['date'];
   if(!token) return res.redirect('/auth/google');
   
-  //var accessToken     = req.session.access_token;
-  //var calendarId      = req.params.calendarId;
   var elections = fb.queryByTitle(req.params['id']);
   elections.then(function(data) {
     var data2 = Object.values(data)[0];
@@ -161,14 +162,26 @@ app.get('/election/:id/:date', function(req, res){
       if(err) return res.send(500,err);
       return res.redirect('/election/' + req.params['id']);
     });
-
-
   })
-  
-  
 });
 
+<<<<<<< HEAD
 
 //controller.update_states();
 //controller.update_elections();
 
+=======
+app.get('/candidate/:id', function (req, res) {
+  console.log(req.params['id']);
+  var candidates = fb.querySpecificCandidate(req.params['id']);
+  candidates.then(function(data) {
+    console.log(data);
+    res.render('pages/profile', {data: data});
+  })
+})
+
+
+//controller.update_states();
+//controller.update_elections();
+//controller.add_candidates();
+>>>>>>> 1c5158aa9e81c6dda3c7cbb33cd3bf7e31353aa2

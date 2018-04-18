@@ -21,7 +21,8 @@ function writeElection(title, state, type, level, date, otherDates) {
         type: type,
         level: level,
         date: date,
-        otherDates: otherDates
+        otherDates: otherDates,
+        candidates: null
     };
 
     var newElectionKey = ref.push().key;
@@ -29,6 +30,27 @@ function writeElection(title, state, type, level, date, otherDates) {
     var updates = {};
 
     updates['/Elections/' + newElectionKey] = electionData;
+    
+    return db.ref().update(updates);
+};
+
+function writeCandidate(electionIds, name, bio, platform) {
+    var candidateData = {
+        name: name,
+        bio: bio,
+        platform: platform,
+        electionIds: electionIds
+    };
+
+    var newCandidateKey = db.ref("/Candidates").push().key;
+
+    var updates = {};
+
+    updates['/Candidates/' + newCandidateKey] = candidateData;
+    for (var i in electionIds) {
+        console.log('/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey);
+        updates['/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey] = name;
+    };
     
     return db.ref().update(updates);
 };
@@ -47,6 +69,10 @@ function writeState(state) {
 /* testing set elections DON'T USE ON REF!!! */
 function setElections() {
     db.ref("/Elections").set(null);
+}
+
+function setCandidates() {
+    db.ref("/Candidates").set(null);
 }
 
 function setStates() {
@@ -150,6 +176,22 @@ function querySpecificElection(key) {
     });
 }
 
+function querySpecificCandidate(key) {
+    return new Promise(function(resolve, reject) {
+        var candidate = db.ref("/Candidates").child(key);
+        //console.log(candidate);
+        candidate.on("value", function(snapshot) {
+            //console.log(snapshot.val());
+            if (snapshot === undefined) {
+                reject();
+            } else {
+                resolve(snapshot.val());
+            }
+        })
+        //console.log(snapshot.val());
+    });
+}
+
 
 
 module.exports.admin = admin;
@@ -165,3 +207,6 @@ module.exports.queryByTitle = queryByTitle;
 module.exports.writeState = writeState;
 module.exports.readStatesPromise = readStatesPromise;
 module.exports.setStates = setStates;
+module.exports.writeCandidate = writeCandidate;
+module.exports.setCandidates = setCandidates;
+module.exports.querySpecificCandidate = querySpecificCandidate;
