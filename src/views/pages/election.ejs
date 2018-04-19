@@ -31,26 +31,26 @@
                 <h2>Election Dates</h2>
                 <p>Add date to your Google Calendar</p>
                 <div class="list-group">
-                    <a href="/election/<%= data.title%>/<%= i%>" class="list-group-item">
+                    <a href="/election/<%= data.title%>/actual" class="list-group-item">
                         <h4 class="list-group-item-heading"><i class="fa fa-calendar"></i><%= " Election Date"%></h4>
                         <p class="list-group-item-text"><%= data.date %></p>
                     </a>
+                    <% var lookup = {
+                        'DRD': 'Domestic Registration Deadline',
+                        'DBRD': 'Domestic Ballot Request Deadline',
+                        'DBED': 'Domestic Ballot Return Deadline',
+                        'ORD': 'Overseas Registration Deadline',
+                        'OBRD': 'Overseas Ballot Request Deadline',
+                        'OBED': 'Overseas Ballot Return Deadline',
+                        'MRD': 'Military Registration Deadline',
+                        'MBRD': 'Military Ballot Request Deadline',
+                        'MBED': 'Military Ballot Return Deadline',
+                        'EVF': 'Early Voting From',
+                        'EVT': 'Early Voting To',
+                        'AVF': 'In-Person Absentee Voting From',
+                        'AVT': 'In-Person Absentee Voting To'
+                    } %>
                     <% for(var i in data.otherDates) { %>
-                        <% var lookup = {
-                            'DRD': 'Domestic Registration Deadline',
-                            'DBRD': 'Domestic Ballot Request Deadline',
-                            'DBED': 'Domestic Ballot Return Deadline',
-                            'ORD': 'Overseas Registration Deadline',
-                            'OBRD': 'Overseas Ballot Request Deadline',
-                            'OBED': 'Overseas Ballot Return Deadline',
-                            'MRD': 'Military Registration Deadline',
-                            'MBRD': 'Military Ballot Request Deadline',
-                            'MBED': 'Military Ballot Return Deadline',
-                            'EVF': 'Early Voting From',
-                            'EVT': 'Early Voting To',
-                            'AVF': 'In-Person Absentee Voting From',
-                            'AVT': 'In-Person Absentee Voting To'
-                        } %>
                         <a href="/election/<%= data.title%>/<%= i%>" class="list-group-item">
                             <h4 class="list-group-item-heading"><i class="fa fa-calendar"></i><%= " " + lookup[data.otherDates[i].kind] %></h4>
                             <p class="list-group-item-text"><%= data.otherDates[i].date_human_readable %></p>
