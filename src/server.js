@@ -9,6 +9,7 @@ var config = require('./config.js');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var alert = require('alert-node');
+var admin = fb.admin;
 
 //const TOKEN_PATH = 'credentials.json';
 const fs = require('fs');
@@ -178,10 +179,18 @@ app.get('/election/:id/:date', function(req, res){
 
 app.get('/candidate/:id', function (req, res) {
   // console.log(req.params['id']);
-  var candidates = fb.querySpecificCandidate(req.params['id']);
-  candidates.then(function(data) {
-    // console.log(data);
-    res.render('pages/profile', {data: data});
+  var userId = req.params['id'];
+
+  admin.auth().getUser(userId)
+    .then(function(userRecord) {
+      var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+      var candidates = fb.querySpecificCandidate(userId);
+      candidates.then(function(data) {
+        // console.log(data);
+        res.render('pages/profile', {data: data, photoURL: photo});
+      });
+  }).catch(function(error) {
+    res.redirect('/');
   })
 });
 
