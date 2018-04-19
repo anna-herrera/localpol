@@ -1,4 +1,4 @@
-<!-- views/candidate_pages/editCandidate.ejs -->
+<!-- views/candidate_pages/viewCandidate.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -48,19 +48,17 @@
             <h1><%= data.name %></h1>
         </div>
 
-        <form method="POST" action=<%= '/candidates/candidate/' + userId + '/edit' %>>
-            <div class="row row-centered">
-                <h4>Bio</h4>
-                <textarea name="bio" style="width: 90%; height:150px"><%= data.bio %></textarea><br>
-            </div>
-            <div class="row row-centered">
-                <h4>Platform</h4>
-                <textarea name="platform" style="width:90%; height:150px"><%= data.platform %></textarea><br>
-            </div>
-            <div class="row row-centered">
-                <input type="submit" value="Update bio and platform" class="btn btn-default btn-md">
-            </div>
-        </form>
+        <div class="row row-centered">
+            <h4>Bio</h4>
+            <p><%= data.bio %></p><br>
+        </div>
+        <div class="row row-centered">
+            <h4>Platform</h4>
+            <p><%= data.platform %></p><br>
+        </div>
+        <div class="row row-centered">
+            <a href="<%= '/candidates/candidate/' + userId + '/edit' %>" class="btn btn-default btn-md">Edit bio/platform</a>
+        </div>
 
         <div class="row">
             <h4>Upcoming Elections</h4>

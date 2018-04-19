@@ -8,7 +8,7 @@
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             var uid = user.uid;
-            window.location.href = '/candidates/candidate/' + uid + '/edit';
+            window.location.href = '/candidates/candidate/' + uid + '/view';
           } else {
             window.location.href = '/candidates/login'; // TODO change this to forbidden page
             // User is signed out.
