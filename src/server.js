@@ -184,10 +184,11 @@ app.get('/candidate/:id', function (req, res) {
   admin.auth().getUser(userId)
     .then(function(userRecord) {
       var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+      var email = userRecord.email;
       var candidates = fb.querySpecificCandidate(userId);
       candidates.then(function(data) {
         // console.log(data);
-        res.render('pages/profile', {data: data, photoURL: photo});
+        res.render('pages/profile', {data: data, photoURL: photo, email: email});
       });
   }).catch(function(error) {
     res.redirect('/');

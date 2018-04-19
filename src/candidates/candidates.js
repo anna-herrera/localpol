@@ -59,11 +59,14 @@ router.get('/candidate/:id/view', function(req, res) {
               .then(function(data) {
                 var elections = data;
                 var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+                var email = userRecord.email;
+
                 res.render('candidate_pages/viewCandidate', {
                   electionList: elections, 
                   userId: userId, 
                   data: candidateData,
-                  photoURL: photo
+                  photoURL: photo,
+                  email: email
                 });
               })
           } else {
@@ -105,11 +108,13 @@ router.get('/candidate/:id/edit', function(req, res) {
               .then(function(data) {
                 var elections = data;
                 var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+                var email = userRecord.email;
                 res.render('candidate_pages/editCandidate', {
                   electionList: elections, 
                   userId: userId, 
                   data: candidateData,
-                  photoURL: photo
+                  photoURL: photo,
+                  email: email
                 });
               })
           } else {

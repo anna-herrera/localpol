@@ -14,10 +14,15 @@
         <div class="row row-centered">
             <img src="<%= photoURL%>" class="img-circle" style="width: 150px; height: 150px;" alt=<%= data.name %> />
             <h2><%= data.name %></h2>
+            <a href="mailto:<%= email %>"><%= email %></a>
         </div>
         <div class="row row-centered">
             <h4>Bio</h4>
             <p><%= data.bio %></p>
+        </div>
+        <div class="row row-centered">
+            <h4>Platform</h4>
+            <p><%= data.platform %></p>
         </div>
         <div class="row">
             <h4>Upcoming Elections</h4>
@@ -26,10 +31,6 @@
                     <a href="/election/<%= data.electionIds[i].title%>" class="list-group-item"><%= data.electionIds[i].title %></a>
                 <% } %>
             </div>
-        </div>
-        <div class="row">
-            <h4>Platform</h4>
-            <p><%= data.platform %></p>
         </div>
     </div>
 </main>
