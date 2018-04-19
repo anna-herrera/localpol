@@ -7,7 +7,8 @@ var passport = require('passport')
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var config = require('./config.js');
 var session = require('express-session');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+var alert = require('alert-node');
 
 //const TOKEN_PATH = 'credentials.json';
 const fs = require('fs');
@@ -17,9 +18,9 @@ const app = express()
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-//app.use('/candidates', candidates); // this adds the /candidates route to the app
-//app.use(express.bodyParser());
+app.use('/candidates', candidates);
 app.use( bodyParser.urlencoded({ extended: false }) ); 
+
 app.use(session({ secret: 'keyboard cat' }));
 app.use(passport.initialize());
 app.use( express.static( __dirname + "/public" ) );
@@ -34,7 +35,7 @@ passport.use(new GoogleStrategy({
     scope: ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/plus.login']
   },
   function(accessToken, refreshToken, profile, done) {
-    token = accessToken;
+    profile.accessToken = accessToken;
     return done(null, profile);
   }
 ));
@@ -58,6 +59,8 @@ app.get('/auth/google/callback',
     req.session.access_token = req.user.accessToken;
     res.redirect(req.session.search);
   });
+  
+
 
 /* Displaying */ 
 
@@ -137,13 +140,15 @@ function ignoreFavicon(req, res, next) {
   }
 }
 
-
 app.get('/election/:id/:date', function(req, res){
   
   console.log(token);
   req.session.search = '/election/' + req.params['id'] + '/' + req.params['date'];
-  if(!token) return res.redirect('/auth/google');
+  if(!req.session.access_token) return res.redirect('/auth/google');
   
+  var accessToken     = req.session.access_token;
+  //var calendarId      = req.params.calendarId;
+
   var elections = fb.queryByTitle(req.params['id']);
   elections.then(function(data) {
     var data2 = Object.values(data)[0];
@@ -162,12 +167,14 @@ app.get('/election/:id/:date', function(req, res){
         'date' : date,
       }
     };
-    gcal(token).events.insert("primary", event, function(err, data) {
+    gcal(accessToken).events.insert("primary", event, function(err, data) {
       if(err) return res.send(500,err);
+      alert("Election Added to Calendar");
       return res.redirect('/election/' + req.params['id']);
     });
   })
 });
+
 
 app.get('/candidate/:id', function (req, res) {
   console.log(req.params['id']);
@@ -191,3 +198,4 @@ app.post('/getCandidate', function(req, res) {
 //controller.update_states();
 //controller.update_elections();
 //controller.add_candidates();
+

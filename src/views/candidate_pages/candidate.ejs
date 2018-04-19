@@ -1,0 +1,58 @@
+<!-- views/candidate_pages/candidate.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/head %>
+    <% include ../partials/firebase_auth %>
+    <script type="text/javascript">
+      initApp = function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            console.log('there is a user here')
+            window.location.href = '/candidates/candidate/' + user.uid;
+            /* use id token to populate page elements and send to the server */
+            // user.getIdToken().then(function(accessToken) {
+            //   console.log(accessToken);
+            //   // Send the token to the server using http
+            //   var xhttp = new XMLHttpRequest();
+            //   xhttp.onreadystatechange = function() {
+            //     if (this.readyState == 4 && this.status == 200) {
+            //       window.location.href = this.responseText;
+            //     }
+            //   };
+            //   xhttp.open("POST", "/candidates/" + uid + "/verify", true);
+            //   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //   xhttp.send("idToken="+ accessToken);
+            // }).catch(function(error) {
+            //   console.log(error);
+            // });
+          } else {
+            window.location.href = '/candidates/login'; // TODO change this to forbidden page
+            // User is signed out.
+            document.getElementById('sign-in-status').textContent = 'Signed out';
+            document.getElementById('sign-in').textContent = 'Sign in';
+            document.getElementById('account-details').textContent = 'null';
+          }
+        }, function(error) {
+          console.log(error);
+        });
+      };
+
+      window.addEventListener('load', function() {
+        initApp();
+      });
+    </script>
+</head>
+<body class="container">
+
+<header>
+    <% include ../partials/header %>
+</header>
+
+<footer>
+    <% include ../partials/footer %>
+</footer>
+
+</body>
+</html>
