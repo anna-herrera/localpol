@@ -3,13 +3,13 @@
 <head>
     <% include ../partials/head %>
 </head>
-<body class="container">
+<body>
 
 <header>
     <% include ../partials/header %>
 </header>
 
-<main>
+<main class="container">
     <div class="container">
         <div class="row row-centered">
             <img src="/anna.jpg" class="img-circle" style="width: 150px; height: 150px;" alt=<%= data.name %> />
@@ -23,8 +23,7 @@
             <h4>Upcoming Elections</h4>
             <div class="list-group">
                 <% for(var i in data.electionIds) { %>
-                    <% console.log(i); %>
-                    <a href="/election/<%= data.electionIds[i]%>" class="list-group-item"><%= data.electionIds[i] %></a>
+                    <a href="/election/<%= data.electionIds[i].title%>" class="list-group-item"><%= data.electionIds[i].title %></a>
                 <% } %>
             </div>
         </div>
@@ -35,9 +34,6 @@
     </div>
 </main>
 
-<footer>
-    <% include ../partials/footer %>
-</footer>
 
 </body>
 </html>

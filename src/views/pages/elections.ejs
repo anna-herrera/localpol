@@ -5,28 +5,24 @@
 <head>
     <% include ../partials/head %>
 </head>
-<body class="container">
+<body>
 
 <header>
     <% include ../partials/header %>
 </header>
 
-<main>
+<main class="container">
     <div class="list-group">
         <% if (data == null) { %>
             <h4>There is no election data for this state at this time.</h4>
         <% } else { %>
             <% for(var i in data) { %>
-                <% console.log(i); %>
                 <a href="/election/<%= data[i].title%>" class="list-group-item"><%= data[i].title %></a>
             <% } %>
         <% } %>
     </div>
 </main>
 
-<footer>
-    <% include ../partials/footer %>
-</footer>
 
 </body>
 </html>

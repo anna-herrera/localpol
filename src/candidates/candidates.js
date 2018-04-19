@@ -14,7 +14,6 @@ var token;
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
-router.use( bodyParser.json() );       // to support JSON-encoded bodies
 router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
@@ -32,7 +31,7 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 router.get('/', function(req, res) {
     // try and get to daniel's edit page
-    res.redirect('/candidates/login');
+    res.redirect('/candidates/home');
     // res.redirect('/candidates/login');
 });
 
@@ -51,45 +50,86 @@ router.get('/candidate/:id/edit', function(req, res) {
   var userId = req.params['id'];
   console.log('user id is: ' + userId);
 
-  adminFb.querySpecificCandidate(userId).then(function(data) {
-    if (data) { // indicates that user exists
-      var candidateData = data;
-      adminFb.readElectionsPromise()
-        .then(function(data) {
-          var elections = data;
-          console.log(candidateData);
-          res.render('candidate_pages/editCandidate', {electionList: elections, userId: userId, data: candidateData});
-        })
-    } else {
-      // should create data for candidate
-      // get name from admin auth
+  admin.auth().getUser(userId)
+    .then(function(userRecord) {
+        adminFb.querySpecificCandidate(userId).then(function(data) {
+          if (data) { // indicates that user profile exists
+            var candidateData = data;
+            adminFb.readElectionsPromise()
+              .then(function(data) {
+                var elections = data;
+                var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+                res.render('candidate_pages/editCandidate', {
+                  electionList: elections, 
+                  userId: userId, 
+                  data: candidateData,
+                  photoURL: photo
+                });
+              })
+          } else {
+            // should create data for candidate
+            // get name from admin auth
 
-      admin.auth().getUser(userId)
-        .then(function(userRecord) {
-          console.log("Successfully fetched user data:", userRecord.toJSON());
-
-          var displayName = userRecord.displayName;
-          if (!displayName)
-              displayName = "Display name not set";
-          var candidateData = {
-            platform: "",
-            name: displayName,
-            bio: ""
+            var displayName = userRecord.displayName;
+            if (!displayName)
+                displayName = "Display name not set";
+            var candidateData = {
+              platform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+              name: displayName,
+              bio: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+            }
+            adminFb.updateCandidate(userId, candidateData);
+            res.redirect('/candidates/candidate/' + userId + '/edit');      
           }
-          adminFb.updateCandidate(userId, candidateData);
-          res.redirect('/candidates/candidate/' + userId + '/edit');
-        })
-        .catch(function(error) {
-          console.log("Error fetching user data:", error);
-          res.redirect('/candidates/login');
+        }).catch(function(err) {
+          console.log(err);
         });
+    })
+    .catch(function(error) {
+      console.log("Error fetching user data:", error);
+      res.redirect('/candidates/login');
+    });
+
+
+  // adminFb.querySpecificCandidate(userId).then(function(data) {
+  //   if (data) { // indicates that user exists
+  //     var candidateData = data;
+  //     adminFb.readElectionsPromise()
+  //       .then(function(data) {
+  //         var elections = data;
+  //         console.log(candidateData);
+  //         res.render('candidate_pages/editCandidate', {electionList: elections, userId: userId, data: candidateData});
+  //       })
+  //   } else {
+  //     // should create data for candidate
+  //     // get name from admin auth
+
+  //     admin.auth().getUser(userId)
+  //       .then(function(userRecord) {
+  //         console.log("Successfully fetched user data:", userRecord.toJSON());
+
+  //         var displayName = userRecord.displayName;
+  //         if (!displayName)
+  //             displayName = "Display name not set";
+  //         var candidateData = {
+  //           platform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+  //           name: displayName,
+  //           bio: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+  //         }
+  //         adminFb.updateCandidate(userId, candidateData);
+  //         res.redirect('/candidates/candidate/' + userId + '/edit');
+  //       })
+  //       .catch(function(error) {
+  //         console.log("Error fetching user data:", error);
+  //         res.redirect('/candidates/login');
+  //       });
 
      
       
-    }
-  }).catch(function(err) {
-    console.log(err);
-  });
+  //   }
+  // }).catch(function(err) {
+  //   console.log(err);
+  // });
 
   // TODO check that user exists
   // admin.auth().getUser(userId)
@@ -140,7 +180,7 @@ router.post('/candidate/:id/edit', function(req, res) {
 });
 
 router.post('/candidate/:id/addElection', function(req, res) {
-  // add candidate id to the election
+  // todo add candidate id to the election
   // add election name to the candidate
   var userId = req.params.id;
   var newElectionId = req.body.electionSelector;
@@ -152,7 +192,18 @@ router.post('/candidate/:id/addElection', function(req, res) {
     .then(function(data) {
       var electionTitle = data.title;
       adminFb.candidateAddElection(userId, electionTitle);
-      res.redirect('/candidates/candidate/' + userId + '/edit');
+      // add candidate id and name to the election
+      admin.auth().getUser(userId)
+        .then(function(userRecord) {
+          console.log("Successfully fetched user data:", userRecord.toJSON());
+          var displayName = userRecord.displayName;
+          adminFb.electionAddCandidate(newElectionId, userId, displayName);
+          res.redirect('/candidates/candidate/' + userId + '/edit');
+        })
+        .catch(function(error) {
+          console.log("Error fetching user data:", error);
+          res.send("Error fetching user's data");
+        });
     });
 });
 
@@ -217,58 +268,51 @@ router.get('/login', function(req, res) {
     res.render('candidate_pages/login');
 });
 
-router.post('/login', function(req, res) {
-  token = req.body.idToken;
-  admin.auth().verifyIdToken(token)
-    .then(function(decodedToken) {
-      var uid = decodedToken.uid;
-      console.log(uid)
-      // TODO: implement three routes based on whether the candidate is assigned to an election or not 
-      // res.send('/candidates/candidate/' + uid);
-      res.redirect('/candidates/register');
-    })
-    .catch(function(error) {
-      console.log(error);
-      res.send('/candidates/login');
-    })
-})
+router.post('/candidate_login', function(req, res) {
+  admin.auth().getUserByEmail(req.body.eml)
+  .then(function(userRecord) {
+    // See the UserRecord reference doc for the contents of userRecord.
+    console.log("Successfully fetched user data:", userRecord.toJSON());
+  })
+  .catch(function(error) {
+    console.log("Error fetching user data:", error);
+  });
+});
+
+
 
 router.get('/home', function(req, res) {
     res.render('candidate_pages/success');
 });
 
-router.get('/candidate', function(req, res) {
-  res.render('candidate_pages/candidate');
-});
-
-router.get('/candidate/:id', function(req, res) {
-  console.log(req.params['id']);
-  var candidates = adminFb.querySpecificCandidate(req.params['id']);
-  candidates.then(function(data) {
-    console.log(data);
-    res.render('candidate_pages/candidateHome', {data : data});
-  })
+// router.get('/candidate/:id', function(req, res) {
+//   console.log(req.params['id']);
+//   var candidates = adminFb.querySpecificCandidate(req.params['id']);
+//   candidates.then(function(data) {
+//     console.log(data);
+//     res.render('candidate_pages/candidateHome', {data : data});
+//   })
   
-});
+// });
 
-router.post('/candidate/:id/verify', function(req, res) {
-  console.log("logged in as " + req.body.idToken);
-  var idToken = req.body.idToken;
-  admin.auth().verifyIdToken(idToken)
-    .then(function(decodedToken) {
-      var uid = decodedToken.uid;
-      console.log("uid found: " + uid);
-      console.log(req.params.id);
-      if (uid !== req.params.id) { // user is not the same as page they are trying to access
-        res.status(404);
-        res.send('/candidates/candidate/' + uid); // try to access candidate's own page
-      }
-    })
-    .catch(function(error) {
-      console.log('you are not authorized to access this page');
-      res.send('/candidates/login');
-    })
-})
+// router.post('/candidate/:id/verify', function(req, res) {
+//   console.log("logged in as " + req.body.idToken);
+//   var idToken = req.body.idToken;
+//   admin.auth().verifyIdToken(idToken)
+//     .then(function(decodedToken) {
+//       var uid = decodedToken.uid;
+//       console.log("uid found: " + uid);
+//       console.log(req.params.id);
+//       if (uid !== req.params.id) { // user is not the same as page they are trying to access
+//         res.status(404);
+//         res.send('/candidates/candidate/' + uid); // try to access candidate's own page
+//       }
+//     })
+//     .catch(function(error) {
+//       console.log('you are not authorized to access this page');
+//       res.send('/candidates/login');
+//     })
+// })
 
 router.get('/success', function(req, res) {
   res.render('candidate_pages/success');

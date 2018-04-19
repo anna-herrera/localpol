@@ -34,6 +34,21 @@ function writeElection(title, state, type, level, date, otherDates) {
     return db.ref().update(updates);
 };
 
+function writeUser(uid, email) {
+    var userData = {
+        uid: uid,
+        email: email
+    };
+
+    var newUserKey = db.ref('/Users').push().key;
+
+    var updates = {};
+
+    updates['/Users/' + newUserKey] = userData;
+    
+    return db.ref().update(updates);
+};
+
 function writeCandidate(electionIds, name, bio, platform) {
     var candidateData = {
         name: name,
@@ -48,7 +63,7 @@ function writeCandidate(electionIds, name, bio, platform) {
 
     updates['/Candidates/' + newCandidateKey] = candidateData;
     for (var i in electionIds) {
-        console.log('/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey);
+        //console.log('/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey);
         updates['/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey] = name;
     };
     
@@ -110,24 +125,24 @@ function readStatesPromise() {
 /* read elections once and print */
 function readElections() {
     testElectionsRef.once("value", function(snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
     })
 }
 
 /* testing constant printing of updated data */
 function constantReadElections() {
     testElectionsRef.on("value", function(snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
     })
 }
 
 /* testing basic querying */
 function queryState() {
-    console.log("Something");
+    //console.log("Something");
     var ref = db.ref("/Elections");
     ref.orderByChild("state").equalTo("California").on("child_added", function(snapshot) {
-        console.log("some state");
-        console.log(snapshot.val());
+       // console.log("some state");
+        //console.log(snapshot.val());
     });
         //console.log(snapshot.val());
 }
@@ -218,7 +233,7 @@ function updateCandidate(candidateId, newData) {
     return new Promise(function(resolve, reject) {
         var candidate = db.ref("/Candidates").child(candidateId);
 
-        console.log("obj to update: " + candidate)
+        //console.log("obj to update: " + candidate)
         //console.log(candidate);
         candidate.update(newData);
         //console.log(snapshot.val());
@@ -232,8 +247,14 @@ function candidateAddElection(candidateId, electionTitle) {
     candidateElectionsRef.set({title: electionTitle});
 }
 
-function electionAddCandidate(electionId, candidateId) {
-    
+function electionAddCandidate(electionId, candidateId, candidateName) {
+    var electionCandidatesRef = db.ref("Elections/" + electionId + "/candidates").push();
+    electionCandidatesRef.set(
+        {
+            candidateId: candidateId,
+            candidateName: candidateName
+        }
+    );
 }
 
 function getStateElectionMap() {
@@ -286,3 +307,4 @@ module.exports.updateCandidate = updateCandidate;
 module.exports.testUpdate = testUpdate;
 module.exports.constantReadElections = constantReadElections;
 module.exports.candidateAddElection = candidateAddElection;
+module.exports.electionAddCandidate = electionAddCandidate;
