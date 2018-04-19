@@ -183,7 +183,7 @@ app.get('/candidate/:id', function (req, res) {
 
   admin.auth().getUser(userId)
     .then(function(userRecord) {
-      var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+      var photo = (userRecord.photoURL) ? userRecord.photoURL : '/user.png'
       var email = userRecord.email;
       var candidates = fb.querySpecificCandidate(userId);
       candidates.then(function(data) {

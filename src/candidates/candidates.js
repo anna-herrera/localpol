@@ -58,7 +58,7 @@ router.get('/candidate/:id/view', function(req, res) {
             adminFb.readElectionsPromise()
               .then(function(data) {
                 var elections = data;
-                var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+                var photo = (userRecord.photoURL) ? userRecord.photoURL : '/user.png'
                 var email = userRecord.email;
 
                 res.render('candidate_pages/viewCandidate', {
@@ -107,7 +107,7 @@ router.get('/candidate/:id/edit', function(req, res) {
             adminFb.readElectionsPromise()
               .then(function(data) {
                 var elections = data;
-                var photo = (userRecord.photoURL) ? userRecord.photoURL : '/anna.jpg'
+                var photo = (userRecord.photoURL) ? userRecord.photoURL : '/user.png'
                 var email = userRecord.email;
                 res.render('candidate_pages/editCandidate', {
                   electionList: elections, 
