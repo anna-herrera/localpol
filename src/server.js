@@ -27,7 +27,7 @@ app.use( express.static( __dirname + "/public" ) );
 
 /* Authentication */
 
-console.log(config.keys.google_client_secret.web.client_secret);
+// console.log(config.keys.google_client_secret.web.client_secret);
 passport.use(new GoogleStrategy({
     clientID: config.keys.google_client_id,
     clientSecret: config.keys.google_client_secret.web.client_secret,
@@ -73,7 +73,7 @@ app.get('/', function (req, res) {
 
 app.get('/getState', function (req, res) {
   var state = req.query['stateSelector'];
-  console.log(state);
+  // console.log(state);
   var elections = fb.queryByState(state);
   elections.then(function(data) {
     //console.log(data);
@@ -117,7 +117,7 @@ displays the title of a specific election. I do a query based
 on the election id which is passed in through the path.*/
 
 app.get('/election/:id', function (req, res) {
-  console.log(req.params['id']);
+  // console.log(req.params['id']);
   var elections = fb.queryByTitle(req.params['id']);
   elections.then(function(data) {
     //console.log(data);
@@ -142,7 +142,7 @@ function ignoreFavicon(req, res, next) {
 
 app.get('/election/:id/:date', function(req, res){
   
-  console.log(token);
+  // console.log(token);
   req.session.search = '/election/' + req.params['id'] + '/' + req.params['date'];
   if(!req.session.access_token) return res.redirect('/auth/google');
   
@@ -177,10 +177,10 @@ app.get('/election/:id/:date', function(req, res){
 
 
 app.get('/candidate/:id', function (req, res) {
-  console.log(req.params['id']);
+  // console.log(req.params['id']);
   var candidates = fb.querySpecificCandidate(req.params['id']);
   candidates.then(function(data) {
-    console.log(data);
+    // console.log(data);
     res.render('pages/profile', {data: data});
   })
 });

@@ -9,7 +9,7 @@
       initApp = function() {
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
-            console.log('there is a user here')
+            //console.log('there is a user here')
             /* use id token to populate page elements and send to the server */
             // user.getIdToken().then(function(accessToken) {
             //   console.log(accessToken);
@@ -54,9 +54,6 @@
 	
 </form>
 
-<footer>
-    <% include ../partials/footer %>
-</footer>
 
 </body>
 </html>

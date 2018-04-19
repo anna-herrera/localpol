@@ -3,15 +3,14 @@
 <head>
     <% include ../partials/head %>
 </head>
-<body class="container">
+<body>
 
 <header>
     <% include ../partials/header %>
 </header>
 
-<main>
+<main class="container">
     <div class="container-fluid">
-        <% console.log(data) %>
         <div class="row">
             <h1><%= data.title %></h1>
         </div>
@@ -65,18 +64,15 @@
                 <p>Select a candidate to view their platform</p>
                 <div class="list-group">
                     <% for(var i in data.candidates) { %>
-                        <% console.log(i); %>
                         <a href="/candidate/<%= i%>" class="list-group-item"><%= data.candidates[i] %></a>
                     <% } %>
-                    </div>
+                </div>
+
+                <p>Are you a candidate? <a href='/candidates/login'>Register Here</a></p>
             </div>     
         <div/>
     </div>
 </main>
-
-<footer>
-    <% include ../partials/footer %>
-</footer>
 
 </body>
 </html>

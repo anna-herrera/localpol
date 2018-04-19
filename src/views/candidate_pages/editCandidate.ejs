@@ -5,7 +5,7 @@
 <head>
     <% include ../partials/head %>
 </head>
-<body class="container">
+<body>
 
 <!-- views/candidate_pages/editCandidate.ejs -->
 
@@ -13,7 +13,7 @@
     <% include ../partials/header %>
 </header>
 
-<main>
+<main class="container">
     <div class="container">
         <form method="POST" action=<%= '/candidates/candidate/' + userId + '/edit' %>>
             Enter bio:
@@ -38,7 +38,6 @@
             <h4>Upcoming Elections</h4>
             <div class="list-group">
                 <% for(var i in data.electionIds) { %>
-                    <% console.log(i); %>
                     <a href="/election/<%= data.electionIds[i]%>" class="list-group-item"><%= data.electionIds[i] %></a>
                 <% } %>
             </div>
@@ -49,10 +48,6 @@
         </div>
     </div>
 </main>
-
-<footer>
-    <% include ../partials/footer %>
-</footer>
 
 </body>
 </html>

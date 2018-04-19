@@ -63,7 +63,7 @@ function writeCandidate(electionIds, name, bio, platform) {
 
     updates['/Candidates/' + newCandidateKey] = candidateData;
     for (var i in electionIds) {
-        console.log('/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey);
+        //console.log('/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey);
         updates['/Elections/' + electionIds[i] + '/candidates/' + newCandidateKey] = name;
     };
     
@@ -125,24 +125,24 @@ function readStatesPromise() {
 /* read elections once and print */
 function readElections() {
     testElectionsRef.once("value", function(snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
     })
 }
 
 /* testing constant printing of updated data */
 function constantReadElections() {
     testElectionsRef.on("value", function(snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
     })
 }
 
 /* testing basic querying */
 function queryState() {
-    console.log("Something");
+    //console.log("Something");
     var ref = db.ref("/Elections");
     ref.orderByChild("state").equalTo("California").on("child_added", function(snapshot) {
-        console.log("some state");
-        console.log(snapshot.val());
+       // console.log("some state");
+        //console.log(snapshot.val());
     });
         //console.log(snapshot.val());
 }
@@ -233,7 +233,7 @@ function updateCandidate(candidateId, newData) {
     return new Promise(function(resolve, reject) {
         var candidate = db.ref("/Candidates").child(candidateId);
 
-        console.log("obj to update: " + candidate)
+        //console.log("obj to update: " + candidate)
         //console.log(candidate);
         candidate.update(newData);
         //console.log(snapshot.val());
@@ -241,21 +241,7 @@ function updateCandidate(candidateId, newData) {
 }
 
 
-function createUser(email, password) {
-    admin.auth().createUser({
-      email: email,
-      password: password
-    }).then(function(userRecord) {
-        // See the UserRecord reference doc for the contents of userRecord.
-        console.log("Successfully created new user:", userRecord.uid);
-    }).catch(function(error) {
-        console.log("Error creating new user:", error);
-    });
 
-}
-
-
-module.exports.createUser = createUser;
 module.exports.admin = admin;
 module.exports.writeElection = writeElection;
 module.exports.readElections = readElections;
