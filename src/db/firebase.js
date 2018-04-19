@@ -225,6 +225,44 @@ function updateCandidate(candidateId, newData) {
     });    
 }
 
+/* takes in a candidate and election object and adds the id and title to candidate/electionIds */
+function candidateAddElection(candidateId, electionTitle) {
+    console.log(electionTitle);
+    var candidateElectionsRef = db.ref("Candidates/" + candidateId + "/electionIds").push();
+    candidateElectionsRef.set({title: electionTitle});
+}
+
+function electionAddCandidate(electionId, candidateId) {
+    
+}
+
+function getStateElectionMap() {
+    return new Promise(function(resolve, reject) {
+        readStatesPromise().then(function(data) {
+            var retMap = new Map();
+            stateList = data;
+            for (var state in stateList) {
+                var stateName = stateList[state].name
+                console.log("outer " + stateName);
+                queryByState(stateName)
+                    .then(function(data) {
+                        
+                        if (data) {
+                            console.log("inner " + data);
+                            retMap.set(stateName, data);// key is the state and entry is an object of elections
+                        }
+                        
+                    })
+                
+            }
+            console.log(retMap.get('Virgin Islands'));
+            resolve(retMap); // do we need to reject?
+        }).catch(function(err) {
+            console.log(err);
+        });
+    });
+}
+
 
 
 module.exports.admin = admin;
@@ -246,3 +284,5 @@ module.exports.querySpecificCandidate = querySpecificCandidate;
 module.exports.queryUserProfile = queryUserProfile;
 module.exports.updateCandidate = updateCandidate;
 module.exports.testUpdate = testUpdate;
+module.exports.constantReadElections = constantReadElections;
+module.exports.candidateAddElection = candidateAddElection;

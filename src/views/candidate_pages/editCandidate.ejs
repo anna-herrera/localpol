@@ -1,4 +1,4 @@
-<!-- views/candidate_pages/candidateEdit.ejs -->
+<!-- views/candidate_pages/editCandidate.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,12 +17,25 @@
     <div class="container">
         <form method="POST" action=<%= '/candidates/candidate/' + userId + '/edit' %>>
             Enter bio:
-            <input type="text" name="bio"><br>
+            <textarea name="bio" style="width:200px; height:50px"></textarea><br>
             Enter platform
-            <input type="text" name="platform"><br>
-            <input type="hidden" name="candidateId" value= <%= candidateId %>>
+            <textarea name="platform" style="width:200px; height:50px"></textarea><br>
             <input type="submit" value="submit">
         </form>
+        <br><br><br>
+        <form action=<%= '/candidates/candidate/' + userId + '/addElection' %> method="POST">
+            <div class="row">
+                <select name="electionSelector" class="selectpicker" data-show-subtext="true" data-live-search="true">
+                    <% for (var i in electionList) {%>
+                        <option value="<%= i %>"><%= electionList[i].title %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="row">
+                <input type="submit" value="Add Election" class="btn btn-secondary btn-lg">
+            </div>
+        </form>
+        <br><br><br>
     </div>
     <div class="container">
         <div class="row row-centered">
@@ -39,7 +52,7 @@
             <div class="list-group">
                 <% for(var i in data.electionIds) { %>
                     <% console.log(i); %>
-                    <a href="/election/<%= data.electionIds[i]%>" class="list-group-item"><%= data.electionIds[i] %></a>
+                    <a href="/election/<%= data.electionIds[i].title%>" class="list-group-item"><%= data.electionIds[i].title %></a>
                 <% } %>
             </div>
         </div>

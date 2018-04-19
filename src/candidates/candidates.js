@@ -32,7 +32,7 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 router.get('/', function(req, res) {
     // try and get to daniel's edit page
-    res.redirect('/candidates/candidate/BDrnqtlte4dIm7dBJWVLBRxte1n2/edit');
+    res.redirect('/candidates/login');
     // res.redirect('/candidates/login');
 });
 
@@ -51,62 +51,109 @@ router.get('/candidate/:id/edit', function(req, res) {
   var userId = req.params['id'];
   console.log('user id is: ' + userId);
 
-  // TODO check that user exists
-  admin.auth().getUser(userId)
-  .then(function(userRecord) {
-    isUser = true;
-    // See the UserRecord reference doc for the contents of userRecord.
-    console.log("Successfully fetched user data:", userRecord.toJSON());
-  })
-  .catch(function(error) {
-    console.log("Error fetching user data:", error);
+  adminFb.querySpecificCandidate(userId).then(function(data) {
+    if (data) { // indicates that user exists
+      var candidateData = data;
+      adminFb.readElectionsPromise()
+        .then(function(data) {
+          var elections = data;
+          console.log(candidateData);
+          res.render('candidate_pages/editCandidate', {electionList: elections, userId: userId, data: candidateData});
+        })
+    } else {
+      // should create data for candidate
+      // get name from admin auth
+
+      admin.auth().getUser(userId)
+        .then(function(userRecord) {
+          console.log("Successfully fetched user data:", userRecord.toJSON());
+
+          var displayName = userRecord.displayName;
+          if (!displayName)
+              displayName = "Display name not set";
+          var candidateData = {
+            platform: "",
+            name: displayName,
+            bio: ""
+          }
+          adminFb.updateCandidate(userId, candidateData);
+          res.redirect('/candidates/candidate/' + userId + '/edit');
+        })
+        .catch(function(error) {
+          console.log("Error fetching user data:", error);
+          res.redirect('/candidates/login');
+        });
+
+     
+      
+    }
+  }).catch(function(err) {
+    console.log(err);
   });
 
-      // have to map from user to profile
-      var candidateId = adminFb.queryUserProfile(req.params['id']);
-      candidateId.then(function(data) {
-        console.log('candidate id = '+ data);
-        return data; // return promise with candidate id
-      }).then(function(data) {
-          if (data) {
-            var candidateId = data;
-            var candidates = adminFb.querySpecificCandidate(candidateId);
-            candidates.then(function(data) {
-              res.render('candidate_pages/editCandidate', {userId: userId, candidateId: candidateId, data: data});
-            }).catch(function(error) {
-              console.log(error);
-              res.send(error);
-            });
-          } else {
-            res.send('could not find user');
-          }
-        // res.render('candidate_pages/editCandidate', {data: data});
-      }).catch(function(error) {
-        console.log(error);
-        res.send(error);
-      });
-  // candidates.then(function(data) {
-  //   res.render('candidate_pages/editCandidate', {data: data});
+  // TODO check that user exists
+  // admin.auth().getUser(userId)
+  // .then(function(userRecord) {
+  //   isUser = true;
+  //   // See the UserRecord reference doc for the contents of userRecord.
+  //   console.log("Successfully fetched user data:", userRecord.toJSON());
   // })
+  // .catch(function(error) {
+  //   console.log("Error fetching user data:", error);
+  // });
+
+  //     // have to map from user to profile
+  //     var candidateId = adminFb.queryUserProfile(req.params['id']);
+  //     candidateId.then(function(data) {
+  //       console.log('candidate id = '+ data);
+  //       return data; // return promise with candidate id
+  //     }).then(function(data) {
+  //         if (data) {
+  //           var candidateId = data;
+  //           var candidates = adminFb.querySpecificCandidate(candidateId);
+  //           return adminFb.querySpecificCandidate(candidateId);
+  //         } else {
+  //           res.send('could not find user');
+  //         }
+  //     }).then(function(data) {
+  //       var candidateData = data;
+  //       // var eMap = adminFb.getStateElectionMap();
+  //       // eMap.then(function(data) {
+  //       //   console.log("data is " + data.get('California'));
+  //       // });
+  //       var elections = adminFb.readElectionsPromise();
+  //       elections.then(function(data) {
+  //         res.render('candidate_pages/editCandidate', {electionList: data, userId: userId, data: candidateData});
+  //       })
+  //       // res.render('candidate_pages/editCandidate', {electionsMap: eMap, userId: userId, data: candidateData});
+  //     }).catch(function(error) {
+  //             console.log(error);
+  //             res.send(error);
+  //     });
 });
 
 router.post('/candidate/:id/edit', function(req, res) {
   var userId =req.params.id;
   var newData = req.body;
-  var candidateId = adminFb.queryUserProfile(userId);
-  candidateId.then(function(data) {
-    adminFb.updateCandidate(data, newData);
-  })
-  // adminFb.testUpdate();
-  // res.redirect('/candidates/candidate/' + req.params.id + '/edit');
+  adminFb.updateCandidate(userId, newData);
   res.redirect('/candidates/candidate/' + userId + '/edit');
-  // candidates.then(function(data) {
-  //   res.render('candidate_pages/editCandidate', {data: data});
-  // })
 });
 
 router.post('/candidate/:id/addElection', function(req, res) {
-
+  // add candidate id to the election
+  // add election name to the candidate
+  var userId = req.params.id;
+  var newElectionId = req.body.electionSelector;
+  // for (const prop in req.body.electionSelector) {
+  //   console.log(prop + " : " + req.body.electionSelector.prop);
+  // }
+  console.log(req.body.electionSelector);
+  adminFb.querySpecificElection(newElectionId)
+    .then(function(data) {
+      var electionTitle = data.title;
+      adminFb.candidateAddElection(userId, electionTitle);
+      res.redirect('/candidates/candidate/' + userId + '/edit');
+    });
 });
 
 /*

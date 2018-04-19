@@ -1,5 +1,33 @@
 <!-- views/partials/header.ejs -->
+<% include ../partials/firebase_auth %>
+<script type="text/javascript">
+      initApp = function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            document.getElementById('logoutBtn').style.display = 'block';
+            console.log("someone logged in");
+          } else {
+            document.getElementById('logoutBtn').style.display = 'none';
+            console.log("no one logged in");
+          }
+        }, function(error) {
+          console.log(error);
+        });
+      };
 
+      window.addEventListener('load', function() {
+        initApp();
+      });
+
+     function logout() {
+		firebase.auth().signOut().then(function() {
+		  window.location.href = '/candidates/login';
+		}, function(error) {
+		  // An error happened.
+		  console.log(error);
+		});
+     }
+</script>
 <nav class="navbar navbar-default" role="navigation">
 <div class="container-fluid">
 
@@ -10,6 +38,8 @@
             <li><a href="/">Home</a></li>
             <li><a href="/about">About</a></li>
             <li><a href="/candidates">Candidates</a></li>
+            <li id="logoutBtn"><a id="myLink" href="#" onclick="logout();return false;">Logout</a></li>
+            <!-- <li><button id="logoutBtn" onclick="logout()">Logout</button></li> -->
         </ul>
     </div>
 
