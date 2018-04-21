@@ -103,8 +103,7 @@ function readElectionsPromise() {
             } else {
                 resolve(snapshot.val());
             }
-        })
-        //console.log(snapshot.val());
+        });
     });
 };
 
@@ -118,34 +117,8 @@ function readStatesPromise() {
                 resolve(snapshot.val());
             }
         })
-        //console.log(snapshot.val());
     });
 };
-
-/* read elections once and print */
-function readElections() {
-    testElectionsRef.once("value", function(snapshot) {
-        //console.log(snapshot.val());
-    })
-}
-
-/* testing constant printing of updated data */
-function constantReadElections() {
-    testElectionsRef.on("value", function(snapshot) {
-        //console.log(snapshot.val());
-    })
-}
-
-/* testing basic querying */
-function queryState() {
-    //console.log("Something");
-    var ref = db.ref("/Elections");
-    ref.orderByChild("state").equalTo("California").on("child_added", function(snapshot) {
-       // console.log("some state");
-        //console.log(snapshot.val());
-    });
-        //console.log(snapshot.val());
-}
 
 /* 
     return a promise listing the elections in a given state 
@@ -187,62 +160,45 @@ function querySpecificElection(key) {
                 resolve(snapshot.val());
             }
         })
-        //console.log(snapshot.val());
     });
 }
 
 function querySpecificCandidate(key) {
     return new Promise(function(resolve, reject) {
         var candidate = db.ref("/Candidates").child(key);
-        //console.log(candidate);
         candidate.on("value", function(snapshot) {
-            //console.log(snapshot.val());
             if (snapshot === undefined) {
                 reject();
             } else {
                 resolve(snapshot.val());
             }
         })
-        //console.log(snapshot.val());
     });
 }
 
 function queryUserProfile(key) { 
     return new Promise(function(resolve, reject) {
         var candidate = db.ref("/UserToCandidates").child(key);
-        //console.log(candidate);
         candidate.on("value", function(snapshot) {
-            //console.log(snapshot.val());
             if (snapshot === undefined) {
                 reject();
             } else {
                 resolve(snapshot.val());
             }
         })
-        //console.log(snapshot.val());
     });
-}
-
-function testUpdate() {
-    var candidate = db.ref("/Candidates").child("-LAMYRMaMFM5llPep5gv");
-    candidate.update({bio: "new bio"});
 }
 
 /* take in the id of candidate to be updated and an object of the new data values */
 function updateCandidate(candidateId, newData) {
     return new Promise(function(resolve, reject) {
         var candidate = db.ref("/Candidates").child(candidateId);
-
-        //console.log("obj to update: " + candidate)
-        //console.log(candidate);
         candidate.update(newData);
-        //console.log(snapshot.val());
     });    
 }
 
 /* takes in a candidate and election object and adds the id and title to candidate/electionIds */
 function candidateAddElection(candidateId, electionTitle) {
-    console.log(electionTitle);
     var candidateElectionsRef = db.ref("Candidates/" + candidateId + "/electionIds").push();
     candidateElectionsRef.set({title: electionTitle});
 }
@@ -257,42 +213,11 @@ function electionAddCandidate(electionId, candidateId, candidateName) {
     );
 }
 
-function getStateElectionMap() {
-    return new Promise(function(resolve, reject) {
-        readStatesPromise().then(function(data) {
-            var retMap = new Map();
-            stateList = data;
-            for (var state in stateList) {
-                var stateName = stateList[state].name
-                console.log("outer " + stateName);
-                queryByState(stateName)
-                    .then(function(data) {
-                        
-                        if (data) {
-                            console.log("inner " + data);
-                            retMap.set(stateName, data);// key is the state and entry is an object of elections
-                        }
-                        
-                    })
-                
-            }
-            console.log(retMap.get('Virgin Islands'));
-            resolve(retMap); // do we need to reject?
-        }).catch(function(err) {
-            console.log(err);
-        });
-    });
-}
-
-
 
 module.exports.admin = admin;
 module.exports.writeElection = writeElection;
-module.exports.readElections = readElections;
 module.exports.setElections = setElections;
 module.exports.readElectionsPromise = readElectionsPromise;
-module.exports.constantReadElections = constantReadElections;
-module.exports.queryState = queryState;
 module.exports.querySpecificElection = querySpecificElection;
 module.exports.queryByState = queryByState;
 module.exports.queryByTitle = queryByTitle;
@@ -304,7 +229,5 @@ module.exports.setCandidates = setCandidates;
 module.exports.querySpecificCandidate = querySpecificCandidate;
 module.exports.queryUserProfile = queryUserProfile;
 module.exports.updateCandidate = updateCandidate;
-module.exports.testUpdate = testUpdate;
-module.exports.constantReadElections = constantReadElections;
 module.exports.candidateAddElection = candidateAddElection;
 module.exports.electionAddCandidate = electionAddCandidate;
